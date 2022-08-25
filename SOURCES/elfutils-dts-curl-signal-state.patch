@@ -1,0 +1,37 @@
+diff --git a/debuginfod/debuginfod-client.c b/debuginfod/debuginfod-client.c
+index 18e7b85f..5ad6001b 100644
+--- a/debuginfod/debuginfod-client.c
++++ b/debuginfod/debuginfod-client.c
+@@ -83,6 +83,7 @@ void debuginfod_end (debuginfod_client *c) { }
+ #include <sys/stat.h>
+ #include <sys/utsname.h>
+ #include <curl/curl.h>
++#include <signal.h>
+ 
+ /* If fts.h is included before config.h, its indirect inclusions may not
+    give us the right LFS aliases of these functions, so map them manually.  */
+@@ -1128,7 +1129,24 @@ debuginfod_set_progressfn(debuginfod_client *client,
+ /* NB: these are thread-unsafe. */
+ __attribute__((constructor)) attribute_hidden void libdebuginfod_ctor(void)
+ {
++  /* The RHEL7 version of libcurl will muck with signal masks, messing up,
++     e.g., gdb.  */
++  sigset_t original_mask;
++  struct sigaction original_actions[NSIG];
++
++  sigprocmask (0, NULL, &original_mask);
++
++  /* Some signal numbers in the range are invalid and might produce
++     an error (EINVAL).  Simply ignore those, this is best effort.  */
++  for (int i = 1; i < NSIG; ++i)
++    sigaction (i, NULL, &original_actions[i]);
++
+   curl_global_init(CURL_GLOBAL_DEFAULT);
++
++  for (int i = 1; i < NSIG; ++i)
++    sigaction (i, &original_actions[i], NULL);
++
++  sigprocmask (SIG_SETMASK, &original_mask, NULL);
+ }
+ 
+ /* NB: this is very thread-unsafe: it breaks other threads that are still in libcurl */

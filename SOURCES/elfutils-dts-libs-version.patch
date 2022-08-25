@@ -1,0 +1,52 @@
+diff --git a/libdw/Makefile.am b/libdw/Makefile.am
+index ef566399..c6493a08 100644
+--- a/libdw/Makefile.am
++++ b/libdw/Makefile.am
+@@ -32,7 +32,7 @@ if BUILD_STATIC
+ AM_CFLAGS += $(fpic_CFLAGS)
+ endif
+ AM_CPPFLAGS += -I$(srcdir)/../libelf -I$(srcdir)/../libdwelf -pthread
+-VERSION = 1
++VERSION = dts.1
+ 
+ lib_LIBRARIES = libdw.a
+ noinst_LIBRARIES = libdw_pic.a
+diff --git a/configure.ac b/configure.ac
+index b348a717..e94449c0 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -25,7 +25,7 @@ m4_ifndef([AC_PACKAGE_URL],
+                     [Define to home page for this package])
+           AC_SUBST([PACKAGE_URL], ["http://elfutils.org/"])])
+ 
+-LIBDEBUGINFOD_SONAME=libdebuginfod.so.1
++LIBDEBUGINFOD_SONAME=libdebuginfod.so.dts.1
+ AC_SUBST([LIBDEBUGINFOD_SONAME])
+ 
+ # We want eu- as default program prefix if none was given by the user.
+diff --git a/libasm/Makefile.am b/libasm/Makefile.am
+index 6a191465..912de734 100644
+--- a/libasm/Makefile.am
++++ b/libasm/Makefile.am
+@@ -30,7 +30,7 @@
+ include $(top_srcdir)/config/eu.am
+ AM_CPPFLAGS += -I$(top_srcdir)/libelf -I$(top_srcdir)/libebl -I$(top_srcdir)/libdw -I$(top_srcdir)/libdwelf
+ 
+-VERSION = 1
++VERSION = dts.1
+ 
+ lib_LIBRARIES = libasm.a
+ noinst_LIBRARIES = libasm_pic.a
+diff --git a/libelf/Makefile.am b/libelf/Makefile.am
+index 62cb53d6..740e123b 100644
+--- a/libelf/Makefile.am
++++ b/libelf/Makefile.am
+@@ -32,7 +32,7 @@ if BUILD_STATIC
+ AM_CFLAGS += $(fpic_CFLAGS)
+ endif
+ 
+-VERSION = 1
++VERSION = dts.1
+ 
+ lib_LIBRARIES = libelf.a
+ noinst_LIBRARIES = libelf_pic.a

@@ -1,0 +1,1217 @@
+diff --git a/backends/Makefile.am b/backends/Makefile.am
+index 62916c9c..d6934de6 100644
+--- a/backends/Makefile.am
++++ b/backends/Makefile.am
+@@ -95,11 +95,11 @@ riscv_SRCS = riscv_init.c riscv_symbol.c riscv_cfi.c riscv_regs.c \
+ csky_SRCS = csky_attrs.c csky_init.c csky_symbol.c csky_cfi.c \
+ 	    csky_regs.c csky_initreg.c csky_corenote.c
+ 
+-libebl_backends_a_SOURCES = $(i386_SRCS) $(sh_SRCS) $(x86_64_SRCS) \
+-			    $(ia64_SRCS) $(alpha_SRCS) $(arm_SRCS) \
+-			    $(aarch64_SRCS) $(sparc_SRCS) $(ppc_SRCS) \
++libebl_backends_a_CFLAGS = -fPIC $(AM_CFLAGS)
++libebl_backends_a_SOURCES = $(i386_SRCS) $(x86_64_SRCS) \
++			    $(ia64_SRCS) $(aarch64_SRCS) $(ppc_SRCS) \
+ 			    $(ppc64_SRCS) $(s390_SRCS) \
+-			    $(m68k_SRCS) $(bpf_SRCS) $(riscv_SRCS) $(csky_SRCS)
++			    $(bpf_SRCS)
+ 
+ libebl_backends_pic_a_SOURCES =
+ am_libebl_backends_pic_a_OBJECTS = $(libebl_backends_a_SOURCES:.c=.os)
+diff --git a/debuginfod/Makefile.am b/debuginfod/Makefile.am
+index 3adb2755..79677afe 100644
+--- a/debuginfod/Makefile.am
++++ b/debuginfod/Makefile.am
+@@ -76,10 +76,11 @@ debuginfod_find_SOURCES = debuginfod-find.c
+ debuginfod_find_LDADD = $(libdw) $(libelf) $(libeu) $(libdebuginfod) $(argp_LDADD) $(fts_LIBS)
+ 
+ if LIBDEBUGINFOD
+-noinst_LIBRARIES = libdebuginfod.a
+-noinst_LIBRARIES += libdebuginfod_pic.a
++lib_LIBRARIES = libdebuginfod.a
++noinst_LIBRARIES = libdebuginfod_pic.a
+ endif
+ 
++libdebuginfod_a_CFLAGS = -fPIC $(AM_CFLAGS)
+ libdebuginfod_a_SOURCES = debuginfod-client.c
+ libdebuginfod_pic_a_SOURCES = debuginfod-client.c
+ am_libdebuginfod_pic_a_OBJECTS = $(libdebuginfod_a_SOURCES:.c=.os)
+diff --git a/libasm/Makefile.am b/libasm/Makefile.am
+index c2b54811..6a191465 100644
+--- a/libasm/Makefile.am
++++ b/libasm/Makefile.am
+@@ -37,6 +37,7 @@ noinst_LIBRARIES = libasm_pic.a
+ noinst_DATA = $(noinst_LIBRARIES:_pic.a=.so)
+ pkginclude_HEADERS = libasm.h
+ 
++libasm_a_CFLAGS = -fPIC $(AM_CFLAGS)
+ libasm_a_SOURCES = asm_begin.c asm_abort.c asm_end.c asm_error.c \
+ 		   asm_getelf.c asm_newscn.c asm_newscn_ingrp.c \
+ 		   asm_newsubscn.c asm_newsym.c asm_newcomsym.c \
+diff --git a/libdw/Makefile.am b/libdw/Makefile.am
+index 6b7834af..8906b61a 100644
+--- a/libdw/Makefile.am
++++ b/libdw/Makefile.am
+@@ -41,6 +41,7 @@ noinst_DATA = $(noinst_LIBRARIES:_pic.a=.so)
+ include_HEADERS = dwarf.h
+ pkginclude_HEADERS = libdw.h known-dwarf.h
+ 
++libdw_a_CFLAGS = -fPIC $(AM_CFLAGS)
+ libdw_a_SOURCES = dwarf_begin.c dwarf_begin_elf.c dwarf_end.c dwarf_getelf.c \
+ 		  dwarf_getpubnames.c dwarf_getabbrev.c dwarf_tag.c \
+ 		  dwarf_error.c dwarf_nextcu.c dwarf_diename.c dwarf_offdie.c \
+diff --git a/libdwelf/Makefile.am b/libdwelf/Makefile.am
+index a35a2873..4932b8dd 100644
+--- a/libdwelf/Makefile.am
++++ b/libdwelf/Makefile.am
+@@ -39,6 +39,7 @@ noinst_LIBRARIES = libdwelf.a libdwelf_pic.a
+ pkginclude_HEADERS = libdwelf.h
+ noinst_HEADERS = libdwelfP.h
+ 
++libdwelf_a_CFLAGS = -fPIC $(AM_CFLAGS)
+ libdwelf_a_SOURCES = dwelf_elf_gnu_debuglink.c dwelf_dwarf_gnu_debugaltlink.c \
+ 		     dwelf_elf_gnu_build_id.c dwelf_scn_gnu_compressed_size.c \
+ 		     dwelf_strtab.c dwelf_elf_begin.c \
+diff --git a/libdwfl/Makefile.am b/libdwfl/Makefile.am
+index a0013e41..51e36dfb 100644
+--- a/libdwfl/Makefile.am
++++ b/libdwfl/Makefile.am
+@@ -39,7 +39,7 @@ noinst_LIBRARIES += libdwfl_pic.a
+ 
+ pkginclude_HEADERS = libdwfl.h
+ 
+-
++libdwfl_a_CFLAGS = -fPIC $(AM_CFLAGS)
+ libdwfl_a_SOURCES = dwfl_begin.c dwfl_end.c dwfl_error.c dwfl_version.c \
+ 		    dwfl_module.c dwfl_report_elf.c relocate.c \
+ 		    dwfl_module_build_id.c dwfl_module_report_build_id.c \
+diff --git a/libebl/Makefile.am b/libebl/Makefile.am
+index d84e7ee2..4943353d 100644
+--- a/libebl/Makefile.am
++++ b/libebl/Makefile.am
+@@ -59,6 +59,8 @@ libebl_a_SOURCES = eblopenbackend.c eblclosebackend.c eblreloctypename.c \
+ libebl_pic_a_SOURCES =
+ am_libebl_pic_a_OBJECTS = $(libebl_a_SOURCES:.c=.os)
+ 
++libebl_a_CFLAGS = -fPIC $(AM_CFLAGS)
++
+ noinst_HEADERS = libebl.h libeblP.h ebl-hooks.h
+ 
+ MOSTLYCLEANFILES = $(am_libebl_pic_a_OBJECTS)
+diff --git a/libebl/eblopenbackend.c b/libebl/eblopenbackend.c
+index 71fafed7..2ff86416 100644
+--- a/libebl/eblopenbackend.c
++++ b/libebl/eblopenbackend.c
+@@ -42,20 +42,13 @@
+ #include <libeblP.h>
+ 
+ Ebl *i386_init (Elf *, GElf_Half, Ebl *);
+-Ebl *sh_init (Elf *, GElf_Half, Ebl *);
+ Ebl *x86_64_init (Elf *, GElf_Half, Ebl *);
+ Ebl *ia64_init (Elf *, GElf_Half, Ebl *);
+-Ebl *alpha_init (Elf *, GElf_Half, Ebl *);
+-Ebl *arm_init (Elf *, GElf_Half, Ebl *);
+ Ebl *aarch64_init (Elf *, GElf_Half, Ebl *);
+-Ebl *sparc_init (Elf *, GElf_Half, Ebl *);
+ Ebl *ppc_init (Elf *, GElf_Half, Ebl *);
+ Ebl *ppc64_init (Elf *, GElf_Half, Ebl *);
+ Ebl *s390_init (Elf *, GElf_Half, Ebl *);
+-Ebl *m68k_init (Elf *, GElf_Half, Ebl *);
+ Ebl *bpf_init (Elf *, GElf_Half, Ebl *);
+-Ebl *riscv_init (Elf *, GElf_Half, Ebl *);
+-Ebl *csky_init (Elf *, GElf_Half, Ebl *);
+ 
+ /* This table should contain the complete list of architectures as far
+    as the ELF specification is concerned.  */
+@@ -74,27 +67,27 @@ static const struct
+ {
+   { i386_init, "elf_i386", "i386", 4, EM_386, ELFCLASS32, ELFDATA2LSB },
+   { ia64_init, "elf_ia64", "ia64", 4, EM_IA_64, ELFCLASS64, ELFDATA2LSB },
+-  { alpha_init, "elf_alpha", "alpha", 5, EM_ALPHA, ELFCLASS64, ELFDATA2LSB },
++  { NULL, "elf_alpha", "alpha", 5, EM_ALPHA, ELFCLASS64, ELFDATA2LSB },
+   { x86_64_init, "elf_x86_64", "x86_64", 6, EM_X86_64, ELFCLASS64, ELFDATA2LSB },
+   { ppc_init, "elf_ppc", "ppc", 3, EM_PPC, ELFCLASS32, ELFDATA2MSB },
+   { ppc64_init, "elf_ppc64", "ppc64", 5, EM_PPC64, ELFCLASS64, ELFDATA2MSB },
+   // XXX class and machine fields need to be filled in for all archs.
+-  { sh_init, "elf_sh", "sh", 2, EM_SH, 0, 0 },
+-  { arm_init, "ebl_arm", "arm", 3, EM_ARM, 0, 0 },
+-  { sparc_init, "elf_sparcv9", "sparc", 5, EM_SPARCV9, 0, 0 },
+-  { sparc_init, "elf_sparc", "sparc", 5, EM_SPARC, 0, 0 },
+-  { sparc_init, "elf_sparcv8plus", "sparc", 5, EM_SPARC32PLUS, 0, 0 },
++  { NULL, "elf_sh", "sh", 2, EM_SH, 0, 0 },
++  { NULL, "ebl_arm", "arm", 3, EM_ARM, 0, 0 },
++  { NULL, "elf_sparcv9", "sparc", 5, EM_SPARCV9, 0, 0 },
++  { NULL, "elf_sparc", "sparc", 5, EM_SPARC, 0, 0 },
++  { NULL, "elf_sparcv8plus", "sparc", 5, EM_SPARC32PLUS, 0, 0 },
+   { s390_init, "ebl_s390", "s390", 4, EM_S390, 0, 0 },
+ 
+   { NULL, "elf_tilegx", "tilegx", 6, EM_TILEGX, ELFCLASS64, ELFDATA2LSB },
+   { NULL, "elf_m32", "m32", 3, EM_M32, 0, 0 },
+-  { m68k_init, "elf_m68k", "m68k", 4, EM_68K, ELFCLASS32, ELFDATA2MSB },
++  { NULL, "elf_m68k", "m68k", 4, EM_68K, ELFCLASS32, ELFDATA2MSB },
+   { NULL, "elf_m88k", "m88k", 4, EM_88K, 0, 0 },
+   { NULL, "elf_i860", "i860", 4, EM_860, 0, 0 },
+   { NULL, "ebl_s370", "s370", 4, EM_S370, 0, 0 },
+   { NULL, "elf_parisc", "parisc", 6, EM_PARISC, 0, 0 },
+   { NULL, "elf_vpp500", "vpp500", 5, EM_VPP500, 0, 0 },
+-  { sparc_init, "elf_v8plus", "v8plus", 6, EM_SPARC32PLUS, 0, 0 },
++  { NULL, "elf_v8plus", "v8plus", 6, EM_SPARC32PLUS, 0, 0 },
+   { NULL, "elf_i960", "i960", 4, EM_960, 0, 0 },
+   { NULL, "ebl_v800", "v800", 4, EM_V800, 0, 0 },
+   { NULL, "ebl_fr20", "fr20", 4, EM_FR20, 0, 0 },
+@@ -107,7 +100,7 @@ static const struct
+   { NULL, "elf_h8s", "h8s", 6, EM_H8S, 0, 0 },
+   { NULL, "elf_h8_500", "h8_500", 6, EM_H8_500, 0, 0 },
+   { NULL, "elf_coldfire", "coldfire", 8, EM_COLDFIRE, 0, 0 },
+-  { m68k_init, "elf_68hc12", "68hc12", 6, EM_68HC12, 0, 0 },
++  { NULL, "elf_68hc12", "68hc12", 6, EM_68HC12, 0, 0 },
+   { NULL, "elf_mma", "mma", 3, EM_MMA, 0, 0 },
+   { NULL, "elf_pcp", "pcp", 3, EM_PCP, 0, 0 },
+   { NULL, "elf_ncpu", "ncpu", 4, EM_NCPU, 0, 0 },
+@@ -120,10 +113,10 @@ static const struct
+   { NULL, "elf_fx66", "fx66", 4, EM_FX66, 0, 0 },
+   { NULL, "elf_st9plus", "st9plus", 7, EM_ST9PLUS, 0, 0 },
+   { NULL, "elf_st7", "st7", 3, EM_ST7, 0, 0 },
+-  { m68k_init, "elf_68hc16", "68hc16", 6, EM_68HC16, 0, 0 },
+-  { m68k_init, "elf_68hc11", "68hc11", 6, EM_68HC11, 0, 0 },
+-  { m68k_init, "elf_68hc08", "68hc08", 6, EM_68HC08, 0, 0 },
+-  { m68k_init, "elf_68hc05", "68hc05", 6, EM_68HC05, 0, 0 },
++  { NULL, "elf_68hc16", "68hc16", 6, EM_68HC16, 0, 0 },
++  { NULL, "elf_68hc11", "68hc11", 6, EM_68HC11, 0, 0 },
++  { NULL, "elf_68hc08", "68hc08", 6, EM_68HC08, 0, 0 },
++  { NULL, "elf_68hc05", "68hc05", 6, EM_68HC05, 0, 0 },
+   { NULL, "elf_svx", "svx", 3, EM_SVX, 0, 0 },
+   { NULL, "elf_st19", "st19", 4, EM_ST19, 0, 0 },
+   { NULL, "elf_vax", "vax", 3, EM_VAX, 0, 0 },
+@@ -148,9 +141,9 @@ static const struct
+   { NULL, "elf_xtensa", "xtensa", 6, EM_XTENSA, 0, 0 },
+   { aarch64_init, "elf_aarch64", "aarch64", 7, EM_AARCH64, ELFCLASS64, 0 },
+   { bpf_init, "elf_bpf", "bpf", 3, EM_BPF, 0, 0 },
+-  { riscv_init, "elf_riscv", "riscv", 5, EM_RISCV, ELFCLASS64, ELFDATA2LSB },
+-  { riscv_init, "elf_riscv", "riscv", 5, EM_RISCV, ELFCLASS32, ELFDATA2LSB },
+-  { csky_init, "elf_csky", "csky", 4, EM_CSKY, ELFCLASS32, ELFDATA2LSB },
++  { NULL, "elf_riscv", "riscv", 5, EM_RISCV, ELFCLASS64, ELFDATA2LSB },
++  { NULL, "elf_riscv", "riscv", 5, EM_RISCV, ELFCLASS32, ELFDATA2LSB },
++  { NULL, "elf_csky", "csky", 4, EM_CSKY, ELFCLASS32, ELFDATA2LSB },
+ };
+ #define nmachines (sizeof (machines) / sizeof (machines[0]))
+ 
+diff --git a/libelf/Makefile.am b/libelf/Makefile.am
+index 560ed45f..62cb53d6 100644
+--- a/libelf/Makefile.am
++++ b/libelf/Makefile.am
+@@ -51,6 +51,7 @@ endif
+ 
+ pkginclude_HEADERS = elf-knowledge.h
+ 
++libelf_a_CFLAGS = -fPIC $(AM_CFLAGS)
+ libelf_a_SOURCES = elf_version.c elf_hash.c elf_error.c elf_fill.c \
+ 		   elf_begin.c elf_next.c elf_rand.c elf_end.c elf_kind.c \
+ 		   gelf_getclass.c elf_getbase.c elf_getident.c \
+diff --git a/tests/Makefile.am b/tests/Makefile.am
+index dc7517d9..6f19007a 100644
+--- a/tests/Makefile.am
++++ b/tests/Makefile.am
+@@ -102,9 +102,8 @@ TESTS = run-arextract.sh run-arsymtest.sh run-ar.sh newfile test-nlist \
+ 	newscn run-strip-test.sh run-strip-test2.sh \
+ 	run-strip-test3.sh run-strip-test4.sh run-strip-test5.sh \
+ 	run-strip-test6.sh run-strip-test7.sh run-strip-test8.sh \
+-	run-strip-test9.sh run-strip-test10.sh run-strip-test11.sh \
+-	run-strip-test12.sh \
+-	run-strip-nothing.sh run-strip-g.sh run-annobingroup.sh \
++	run-strip-test9.sh run-strip-test10.sh \
++	run-strip-nothing.sh run-strip-g.sh \
+ 	run-strip-groups.sh run-strip-reloc.sh run-strip-strmerge.sh \
+ 	run-strip-nobitsalign.sh run-strip-remove-keep.sh \
+ 	run-unstrip-test.sh run-unstrip-test2.sh run-unstrip-test3.sh \
+@@ -182,7 +181,6 @@ TESTS = run-arextract.sh run-arsymtest.sh run-ar.sh newfile test-nlist \
+ 	run-readelf-discr.sh \
+ 	run-dwelf_elf_e_machine_string.sh \
+ 	run-elfclassify.sh run-elfclassify-self.sh \
+-	run-disasm-riscv64.sh \
+ 	run-pt_gnu_prop-tests.sh \
+ 	run-getphdrnum.sh run-test-includes.sh \
+ 	leb128 read_unaligned \
+@@ -591,6 +589,7 @@ get_files_LDADD = $(libdw) $(libelf)
+ next_files_LDADD = $(libdw) $(libelf)
+ get_aranges_LDADD = $(libdw) $(libelf)
+ allfcts_LDADD = $(libdw) $(libelf)
++line2addr_no_Wformat = yes
+ line2addr_LDADD = $(libdw) $(argp_LDADD)
+ addrscopes_LDADD = $(libdw) $(argp_LDADD)
+ funcscopes_LDADD = $(libdw) $(argp_LDADD)
+diff --git a/tests/run-addrcfi.sh b/tests/run-addrcfi.sh
+index 64fa24d7..e9f55644 100755
+--- a/tests/run-addrcfi.sh
++++ b/tests/run-addrcfi.sh
+@@ -3521,82 +3521,6 @@ testrun_compare ${abs_builddir}/addrcfi -e testfiles390x 0x0000000080000510 <<\E
+ handle_cfi no CFI (.debug_frame): no error
+ EOF
+ 
+-# EM_ARM (function bar 0x00008510)
+-# Note. Only in .debug_frame, the .eh_frame is actually empty.
+-# Same as s390 and ppc above.
+-testfiles testfilearm
+-testrun_compare ${abs_builddir}/addrcfi -e testfilearm 0x00008510 <<\EOF
+-dwarf_cfi_addrframe (.eh_frame): no matching address range
+-.debug_frame has 0x8510 => [0x8510, 0x8524):
+-	return address in reg14
+-	CFA location expression: bregx(13)
+-	integer reg0 (r0): undefined
+-	integer reg1 (r1): undefined
+-	integer reg2 (r2): undefined
+-	integer reg3 (r3): undefined
+-	integer reg4 (r4): same_value
+-	integer reg5 (r5): same_value
+-	integer reg6 (r6): same_value
+-	integer reg7 (r7): same_value
+-	integer reg8 (r8): same_value
+-	integer reg9 (r9): undefined
+-	integer reg10 (r10): same_value
+-	integer reg11 (r11): same_value
+-	integer reg12 (r12): undefined
+-	integer reg13 (sp): location expression: call_frame_cfa stack_value
+-	integer reg14 (lr): same_value
+-	integer reg15 (pc): location expression: regx(14)
+-	FPA reg16 (f0): undefined
+-	FPA reg17 (f1): undefined
+-	FPA reg18 (f2): undefined
+-	FPA reg19 (f3): undefined
+-	FPA reg20 (f4): undefined
+-	FPA reg21 (f5): undefined
+-	FPA reg22 (f6): undefined
+-	FPA reg23 (f7): undefined
+-	FPA reg96 (f0): undefined
+-	FPA reg97 (f1): undefined
+-	FPA reg98 (f2): undefined
+-	FPA reg99 (f3): undefined
+-	FPA reg100 (f4): undefined
+-	FPA reg101 (f5): undefined
+-	FPA reg102 (f6): undefined
+-	FPA reg103 (f7): undefined
+-	integer reg128 (spsr): undefined
+-	VFP reg256 (d0): undefined
+-	VFP reg257 (d1): undefined
+-	VFP reg258 (d2): undefined
+-	VFP reg259 (d3): undefined
+-	VFP reg260 (d4): undefined
+-	VFP reg261 (d5): undefined
+-	VFP reg262 (d6): undefined
+-	VFP reg263 (d7): undefined
+-	VFP reg264 (d8): same_value
+-	VFP reg265 (d9): same_value
+-	VFP reg266 (d10): same_value
+-	VFP reg267 (d11): same_value
+-	VFP reg268 (d12): same_value
+-	VFP reg269 (d13): same_value
+-	VFP reg270 (d14): same_value
+-	VFP reg271 (d15): same_value
+-	VFP reg272 (d16): undefined
+-	VFP reg273 (d17): undefined
+-	VFP reg274 (d18): undefined
+-	VFP reg275 (d19): undefined
+-	VFP reg276 (d20): undefined
+-	VFP reg277 (d21): undefined
+-	VFP reg278 (d22): undefined
+-	VFP reg279 (d23): undefined
+-	VFP reg280 (d24): undefined
+-	VFP reg281 (d25): undefined
+-	VFP reg282 (d26): undefined
+-	VFP reg283 (d27): undefined
+-	VFP reg284 (d28): undefined
+-	VFP reg285 (d29): undefined
+-	VFP reg286 (d30): undefined
+-	VFP reg287 (d31): undefined
+-EOF
+-
+ # EM_AARCH64 (function bar 0x400550)
+ # Same as arm, 390 and ppc above.
+ # Note missing coverage in .eh_frame.
+@@ -3748,45 +3672,3 @@ testrun_compare ${abs_builddir}/addrcfi -e testfile-x32 0x00400390 <<\EOF
+ handle_cfi no CFI (.debug_frame): no error
+ EOF
+ 
+-# EM_CSKY (function bar 0x8440)
+-testfiles testfilecsky
+-testrun_compare ${abs_builddir}/addrcfi -e testfilecsky 0x8440 <<\EOF
+-dwarf_cfi_addrframe (.eh_frame): no matching address range
+-.debug_frame has 0x8440 => [0x8440, 0x844a):
+-	return address in reg15
+-	CFA location expression: bregx(14)
+-	integer reg0 (r0): undefined
+-	integer reg1 (r1): undefined
+-	integer reg2 (r2): undefined
+-	integer reg3 (r3): undefined
+-	integer reg4 (r4): same_value
+-	integer reg5 (r5): same_value
+-	integer reg6 (r6): same_value
+-	integer reg7 (r7): same_value
+-	integer reg8 (r8): same_value
+-	integer reg9 (r9): same_value
+-	integer reg10 (r10): same_value
+-	integer reg11 (r11): same_value
+-	integer reg12 (r12): undefined
+-	integer reg13 (r13): undefined
+-	integer reg14 (sp): location expression: call_frame_cfa stack_value
+-	integer reg15 (lr): same_value
+-	integer reg16 (r16): same_value
+-	integer reg17 (r17): same_value
+-	integer reg18 (r18): undefined
+-	integer reg19 (r19): undefined
+-	integer reg20 (r20): undefined
+-	integer reg21 (r21): undefined
+-	integer reg22 (r22): undefined
+-	integer reg23 (r23): undefined
+-	integer reg24 (r24): undefined
+-	integer reg25 (r25): undefined
+-	integer reg26 (r26): undefined
+-	integer reg27 (r27): undefined
+-	integer reg28 (r28): undefined
+-	integer reg29 (r29): undefined
+-	integer reg30 (r30): undefined
+-	integer reg31 (tls): undefined
+-	integer reg36 (hi): undefined
+-	integer reg37 (lo): undefined
+-EOF
+diff --git a/tests/run-allregs.sh b/tests/run-allregs.sh
+index 87b16c95..0d2eb524 100755
+--- a/tests/run-allregs.sh
++++ b/tests/run-allregs.sh
+@@ -2344,318 +2344,6 @@ control registers:
+ 	 65: %pswa (pswa), address 64 bits
+ EOF
+ 
+-regs_test testfile30 <<\EOF
+-integer registers:
+-	  0: %g0 (g0), signed 32 bits
+-	  1: %g1 (g1), signed 32 bits
+-	  2: %g2 (g2), signed 32 bits
+-	  3: %g3 (g3), signed 32 bits
+-	  4: %g4 (g4), signed 32 bits
+-	  5: %g5 (g5), signed 32 bits
+-	  6: %g6 (g6), signed 32 bits
+-	  7: %g7 (g7), signed 32 bits
+-	  8: %o0 (o0), signed 32 bits
+-	  9: %o1 (o1), signed 32 bits
+-	 10: %o2 (o2), signed 32 bits
+-	 11: %o3 (o3), signed 32 bits
+-	 12: %o4 (o4), signed 32 bits
+-	 13: %o5 (o5), signed 32 bits
+-	 14: %o6 (o6), address 32 bits
+-	 15: %o7 (o7), signed 32 bits
+-	 16: %l0 (l0), signed 32 bits
+-	 17: %l1 (l1), signed 32 bits
+-	 18: %l2 (l2), signed 32 bits
+-	 19: %l3 (l3), signed 32 bits
+-	 20: %l4 (l4), signed 32 bits
+-	 21: %l5 (l5), signed 32 bits
+-	 22: %l6 (l6), signed 32 bits
+-	 23: %l7 (l7), signed 32 bits
+-	 24: %i0 (i0), signed 32 bits
+-	 25: %i1 (i1), signed 32 bits
+-	 26: %i2 (i2), signed 32 bits
+-	 27: %i3 (i3), signed 32 bits
+-	 28: %i4 (i4), signed 32 bits
+-	 29: %i5 (i5), signed 32 bits
+-	 30: %i6 (i6), address 32 bits
+-	 31: %i7 (i7), signed 32 bits
+-FPU registers:
+-	 32: %f0 (f0), float 32 bits
+-	 33: %f1 (f1), float 32 bits
+-	 34: %f2 (f2), float 32 bits
+-	 35: %f3 (f3), float 32 bits
+-	 36: %f4 (f4), float 32 bits
+-	 37: %f5 (f5), float 32 bits
+-	 38: %f6 (f6), float 32 bits
+-	 39: %f7 (f7), float 32 bits
+-	 40: %f8 (f8), float 32 bits
+-	 41: %f9 (f9), float 32 bits
+-	 42: %f10 (f10), float 32 bits
+-	 43: %f11 (f11), float 32 bits
+-	 44: %f12 (f12), float 32 bits
+-	 45: %f13 (f13), float 32 bits
+-	 46: %f14 (f14), float 32 bits
+-	 47: %f15 (f15), float 32 bits
+-	 48: %f16 (f16), float 32 bits
+-	 49: %f17 (f17), float 32 bits
+-	 50: %f18 (f18), float 32 bits
+-	 51: %f19 (f19), float 32 bits
+-	 52: %f20 (f20), float 32 bits
+-	 53: %f21 (f21), float 32 bits
+-	 54: %f22 (f22), float 32 bits
+-	 55: %f23 (f23), float 32 bits
+-	 56: %f24 (f24), float 32 bits
+-	 57: %f25 (f25), float 32 bits
+-	 58: %f26 (f26), float 32 bits
+-	 59: %f27 (f27), float 32 bits
+-	 60: %f28 (f28), float 32 bits
+-	 61: %f29 (f29), float 32 bits
+-	 62: %f30 (f30), float 32 bits
+-	 63: %f31 (f31), float 32 bits
+-control registers:
+-	 64: %y (y), unsigned 32 bits
+-	 65: %psr (psr), unsigned 32 bits
+-	 66: %wim (wim), unsigned 32 bits
+-	 67: %tbr (tbr), unsigned 32 bits
+-	 68: %pc (pc), address 32 bits
+-	 69: %npc (npc), address 32 bits
+-	 70: %fsr (fsr), unsigned 32 bits
+-	 71: %csr (csr), unsigned 32 bits
+-EOF
+-
+-regs_test testfile31 <<\EOF
+-integer registers:
+-	  0: %g0 (g0), signed 64 bits
+-	  1: %g1 (g1), signed 64 bits
+-	  2: %g2 (g2), signed 64 bits
+-	  3: %g3 (g3), signed 64 bits
+-	  4: %g4 (g4), signed 64 bits
+-	  5: %g5 (g5), signed 64 bits
+-	  6: %g6 (g6), signed 64 bits
+-	  7: %g7 (g7), signed 64 bits
+-	  8: %o0 (o0), signed 64 bits
+-	  9: %o1 (o1), signed 64 bits
+-	 10: %o2 (o2), signed 64 bits
+-	 11: %o3 (o3), signed 64 bits
+-	 12: %o4 (o4), signed 64 bits
+-	 13: %o5 (o5), signed 64 bits
+-	 14: %o6 (o6), address 64 bits
+-	 15: %o7 (o7), signed 64 bits
+-	 16: %l0 (l0), signed 64 bits
+-	 17: %l1 (l1), signed 64 bits
+-	 18: %l2 (l2), signed 64 bits
+-	 19: %l3 (l3), signed 64 bits
+-	 20: %l4 (l4), signed 64 bits
+-	 21: %l5 (l5), signed 64 bits
+-	 22: %l6 (l6), signed 64 bits
+-	 23: %l7 (l7), signed 64 bits
+-	 24: %i0 (i0), signed 64 bits
+-	 25: %i1 (i1), signed 64 bits
+-	 26: %i2 (i2), signed 64 bits
+-	 27: %i3 (i3), signed 64 bits
+-	 28: %i4 (i4), signed 64 bits
+-	 29: %i5 (i5), signed 64 bits
+-	 30: %i6 (i6), address 64 bits
+-	 31: %i7 (i7), signed 64 bits
+-FPU registers:
+-	 32: %f0 (f0), float 32 bits
+-	 33: %f1 (f1), float 32 bits
+-	 34: %f2 (f2), float 32 bits
+-	 35: %f3 (f3), float 32 bits
+-	 36: %f4 (f4), float 32 bits
+-	 37: %f5 (f5), float 32 bits
+-	 38: %f6 (f6), float 32 bits
+-	 39: %f7 (f7), float 32 bits
+-	 40: %f8 (f8), float 32 bits
+-	 41: %f9 (f9), float 32 bits
+-	 42: %f10 (f10), float 32 bits
+-	 43: %f11 (f11), float 32 bits
+-	 44: %f12 (f12), float 32 bits
+-	 45: %f13 (f13), float 32 bits
+-	 46: %f14 (f14), float 32 bits
+-	 47: %f15 (f15), float 32 bits
+-	 48: %f16 (f16), float 32 bits
+-	 49: %f17 (f17), float 32 bits
+-	 50: %f18 (f18), float 32 bits
+-	 51: %f19 (f19), float 32 bits
+-	 52: %f20 (f20), float 32 bits
+-	 53: %f21 (f21), float 32 bits
+-	 54: %f22 (f22), float 32 bits
+-	 55: %f23 (f23), float 32 bits
+-	 56: %f24 (f24), float 32 bits
+-	 57: %f25 (f25), float 32 bits
+-	 58: %f26 (f26), float 32 bits
+-	 59: %f27 (f27), float 32 bits
+-	 60: %f28 (f28), float 32 bits
+-	 61: %f29 (f29), float 32 bits
+-	 62: %f30 (f30), float 32 bits
+-	 63: %f31 (f31), float 32 bits
+-	 64: %f32 (f32), float 64 bits
+-	 65: %f34 (f34), float 64 bits
+-	 66: %f36 (f36), float 64 bits
+-	 67: %f38 (f38), float 64 bits
+-	 68: %f40 (f40), float 64 bits
+-	 69: %f42 (f42), float 64 bits
+-	 70: %f44 (f44), float 64 bits
+-	 71: %f46 (f46), float 64 bits
+-	 72: %f48 (f48), float 64 bits
+-	 73: %f50 (f50), float 64 bits
+-	 74: %f52 (f52), float 64 bits
+-	 75: %f54 (f54), float 64 bits
+-	 76: %f56 (f56), float 64 bits
+-	 77: %f58 (f58), float 64 bits
+-	 78: %f60 (f60), float 64 bits
+-	 79: %f62 (f62), float 64 bits
+-control registers:
+-	 80: %pc (pc), address 64 bits
+-	 81: %npc (npc), address 64 bits
+-	 82: %state (state), unsigned 64 bits
+-	 83: %fsr (fsr), unsigned 64 bits
+-	 84: %fprs (fprs), unsigned 64 bits
+-	 85: %y (y), unsigned 64 bits
+-EOF
+-
+-regs_test testfile10 <<\EOF
+-integer registers:
+-	  0: $v0 (v0), signed 64 bits
+-	  1: $t0 (t0), signed 64 bits
+-	  2: $t1 (t1), signed 64 bits
+-	  3: $t2 (t2), signed 64 bits
+-	  4: $t3 (t3), signed 64 bits
+-	  5: $t4 (t4), signed 64 bits
+-	  6: $t5 (t5), signed 64 bits
+-	  7: $t6 (t6), signed 64 bits
+-	  8: $t7 (t7), signed 64 bits
+-	  9: $s0 (s0), signed 64 bits
+-	 10: $s1 (s1), signed 64 bits
+-	 11: $s2 (s2), signed 64 bits
+-	 12: $s3 (s3), signed 64 bits
+-	 13: $s4 (s4), signed 64 bits
+-	 14: $s5 (s5), signed 64 bits
+-	 15: $s6 (s6), signed 64 bits
+-	 16: $a0 (a0), signed 64 bits
+-	 17: $a1 (a1), signed 64 bits
+-	 18: $a2 (a2), signed 64 bits
+-	 19: $a3 (a3), signed 64 bits
+-	 20: $a4 (a4), signed 64 bits
+-	 21: $a5 (a5), signed 64 bits
+-	 22: $t8 (t8), signed 64 bits
+-	 23: $t9 (t9), signed 64 bits
+-	 24: $t10 (t10), signed 64 bits
+-	 25: $t11 (t11), signed 64 bits
+-	 26: $ra (ra), address 64 bits
+-	 27: $t12 (t12), signed 64 bits
+-	 28: $at (at), signed 64 bits
+-	 29: $gp (gp), address 64 bits
+-	 30: $sp (sp), address 64 bits
+-	 31: $zero (zero), signed 64 bits
+-	 64: $pc (pc), address 64 bits
+-	 66: $unique (unique), address 64 bits
+-FPU registers:
+-	 32: $f0 (f0), float 64 bits
+-	 33: $f1 (f1), float 64 bits
+-	 34: $f2 (f2), float 64 bits
+-	 35: $f3 (f3), float 64 bits
+-	 36: $f4 (f4), float 64 bits
+-	 37: $f5 (f5), float 64 bits
+-	 38: $f6 (f6), float 64 bits
+-	 39: $f7 (f7), float 64 bits
+-	 40: $f8 (f8), float 64 bits
+-	 41: $f9 (f9), float 64 bits
+-	 42: $f10 (f10), float 64 bits
+-	 43: $f11 (f11), float 64 bits
+-	 44: $f12 (f12), float 64 bits
+-	 45: $f13 (f13), float 64 bits
+-	 46: $f14 (f14), float 64 bits
+-	 47: $f15 (f15), float 64 bits
+-	 48: $f16 (f16), float 64 bits
+-	 49: $f17 (f17), float 64 bits
+-	 50: $f18 (f18), float 64 bits
+-	 51: $f19 (f19), float 64 bits
+-	 52: $f20 (f20), float 64 bits
+-	 53: $f21 (f21), float 64 bits
+-	 54: $f22 (f22), float 64 bits
+-	 55: $f23 (f23), float 64 bits
+-	 56: $f24 (f24), float 64 bits
+-	 57: $f25 (f25), float 64 bits
+-	 58: $f26 (f26), float 64 bits
+-	 59: $f27 (f27), float 64 bits
+-	 60: $f28 (f28), float 64 bits
+-	 61: $f29 (f29), float 64 bits
+-	 62: $f30 (f30), float 64 bits
+-	 63: $fpcr (fpcr), unsigned 64 bits
+-EOF
+-
+-regs_test testfile61 <<\EOF
+-integer registers:
+-	  0: r0 (r0), signed 32 bits
+-	  1: r1 (r1), signed 32 bits
+-	  2: r2 (r2), signed 32 bits
+-	  3: r3 (r3), signed 32 bits
+-	  4: r4 (r4), signed 32 bits
+-	  5: r5 (r5), signed 32 bits
+-	  6: r6 (r6), signed 32 bits
+-	  7: r7 (r7), signed 32 bits
+-	  8: r8 (r8), signed 32 bits
+-	  9: r9 (r9), signed 32 bits
+-	 10: r10 (r10), signed 32 bits
+-	 11: r11 (r11), signed 32 bits
+-	 12: r12 (r12), signed 32 bits
+-	 13: sp (sp), address 32 bits
+-	 14: lr (lr), address 32 bits
+-	 15: pc (pc), address 32 bits
+-	128: spsr (spsr), unsigned 32 bits
+-FPA registers:
+-	 16: f0 (f0), float 96 bits
+-	 17: f1 (f1), float 96 bits
+-	 18: f2 (f2), float 96 bits
+-	 19: f3 (f3), float 96 bits
+-	 20: f4 (f4), float 96 bits
+-	 21: f5 (f5), float 96 bits
+-	 22: f6 (f6), float 96 bits
+-	 23: f7 (f7), float 96 bits
+-	 96: f0 (f0), float 96 bits
+-	 97: f1 (f1), float 96 bits
+-	 98: f2 (f2), float 96 bits
+-	 99: f3 (f3), float 96 bits
+-	100: f4 (f4), float 96 bits
+-	101: f5 (f5), float 96 bits
+-	102: f6 (f6), float 96 bits
+-	103: f7 (f7), float 96 bits
+-VFP registers:
+-	256: d0 (d0), float 64 bits
+-	257: d1 (d1), float 64 bits
+-	258: d2 (d2), float 64 bits
+-	259: d3 (d3), float 64 bits
+-	260: d4 (d4), float 64 bits
+-	261: d5 (d5), float 64 bits
+-	262: d6 (d6), float 64 bits
+-	263: d7 (d7), float 64 bits
+-	264: d8 (d8), float 64 bits
+-	265: d9 (d9), float 64 bits
+-	266: d10 (d10), float 64 bits
+-	267: d11 (d11), float 64 bits
+-	268: d12 (d12), float 64 bits
+-	269: d13 (d13), float 64 bits
+-	270: d14 (d14), float 64 bits
+-	271: d15 (d15), float 64 bits
+-	272: d16 (d16), float 64 bits
+-	273: d17 (d17), float 64 bits
+-	274: d18 (d18), float 64 bits
+-	275: d19 (d19), float 64 bits
+-	276: d20 (d20), float 64 bits
+-	277: d21 (d21), float 64 bits
+-	278: d22 (d22), float 64 bits
+-	279: d23 (d23), float 64 bits
+-	280: d24 (d24), float 64 bits
+-	281: d25 (d25), float 64 bits
+-	282: d26 (d26), float 64 bits
+-	283: d27 (d27), float 64 bits
+-	284: d28 (d28), float 64 bits
+-	285: d29 (d29), float 64 bits
+-	286: d30 (d30), float 64 bits
+-	287: d31 (d31), float 64 bits
+-EOF
+-
+ # See run-readelf-mixed-corenote.sh for instructions to regenerate
+ # this core file.
+ regs_test testfile_aarch64_core <<\EOF
+@@ -2802,106 +2490,4 @@ x87 registers:
+ 	 40: %st7 (st7), float 80 bits
+ EOF
+ 
+-# See run-readelf-mixed-corenote.sh for instructions to regenerate
+-# this core file.
+-regs_test testfile-m68k-core <<\EOF
+-integer registers:
+-	  0: %d0 (d0), signed 32 bits
+-	  1: %d1 (d1), signed 32 bits
+-	  2: %d2 (d2), signed 32 bits
+-	  3: %d3 (d3), signed 32 bits
+-	  4: %d4 (d4), signed 32 bits
+-	  5: %d5 (d5), signed 32 bits
+-	  6: %d6 (d6), signed 32 bits
+-	  7: %d7 (d7), signed 32 bits
+-	  8: %a0 (a0), address 32 bits
+-	  9: %a1 (a1), address 32 bits
+-	 10: %a2 (a2), address 32 bits
+-	 11: %a3 (a3), address 32 bits
+-	 12: %a4 (a4), address 32 bits
+-	 13: %a5 (a5), address 32 bits
+-	 14: %a6 (a6), address 32 bits
+-	 15: %a7 (a7), address 32 bits
+-	 24: %pc (pc), address 32 bits
+-FPU registers:
+-	 16: %fp0 (fp0), float 96 bits
+-	 17: %fp1 (fp1), float 96 bits
+-	 18: %fp2 (fp2), float 96 bits
+-	 19: %fp3 (fp3), float 96 bits
+-	 20: %fp4 (fp4), float 96 bits
+-	 21: %fp5 (fp5), float 96 bits
+-	 22: %fp6 (fp6), float 96 bits
+-	 23: %fp7 (fp7), float 96 bits
+-EOF
+-
+-# See run-readelf-mixed-corenote.sh for instructions to regenerate
+-# this core file.
+-regs_test testfile-riscv64-core <<\EOF
+-integer registers:
+-	  0: zero (zero), signed 64 bits
+-	  1: ra (ra), address 64 bits
+-	  2: sp (sp), address 64 bits
+-	  3: gp (gp), address 64 bits
+-	  4: tp (tp), address 64 bits
+-	  5: t0 (t0), signed 64 bits
+-	  6: t1 (t1), signed 64 bits
+-	  7: t2 (t2), signed 64 bits
+-	  8: s0 (s0), signed 64 bits
+-	  9: s1 (s1), signed 64 bits
+-	 10: a0 (a0), signed 64 bits
+-	 11: a1 (a1), signed 64 bits
+-	 12: a2 (a2), signed 64 bits
+-	 13: a3 (a3), signed 64 bits
+-	 14: a4 (a4), signed 64 bits
+-	 15: a5 (a5), signed 64 bits
+-	 16: a6 (a6), signed 64 bits
+-	 17: a7 (a7), signed 64 bits
+-	 18: s2 (s2), signed 64 bits
+-	 19: s3 (s3), signed 64 bits
+-	 20: s4 (s4), signed 64 bits
+-	 21: s5 (s5), signed 64 bits
+-	 22: s6 (s6), signed 64 bits
+-	 23: s7 (s7), signed 64 bits
+-	 24: s8 (s8), signed 64 bits
+-	 25: s9 (s9), signed 64 bits
+-	 26: s10 (s10), signed 64 bits
+-	 27: s11 (s11), signed 64 bits
+-	 28: t3 (t3), signed 64 bits
+-	 29: t4 (t4), signed 64 bits
+-	 30: t5 (t5), signed 64 bits
+-	 31: t6 (t6), signed 64 bits
+-FPU registers:
+-	 32: ft0 (ft0), float 64 bits
+-	 33: ft1 (ft1), float 64 bits
+-	 34: ft2 (ft2), float 64 bits
+-	 35: ft3 (ft3), float 64 bits
+-	 36: ft4 (ft4), float 64 bits
+-	 37: ft5 (ft5), float 64 bits
+-	 38: ft6 (ft6), float 64 bits
+-	 39: ft7 (ft7), float 64 bits
+-	 40: fs0 (fs0), float 64 bits
+-	 41: fs1 (fs1), float 64 bits
+-	 42: fa0 (fa0), float 64 bits
+-	 43: fa1 (fa1), float 64 bits
+-	 44: fa2 (fa2), float 64 bits
+-	 45: fa3 (fa3), float 64 bits
+-	 46: fa4 (fa4), float 64 bits
+-	 47: fa5 (fa5), float 64 bits
+-	 48: fa6 (fa6), float 64 bits
+-	 49: fa7 (fa7), float 64 bits
+-	 50: fs2 (fs2), float 64 bits
+-	 51: fs3 (fs3), float 64 bits
+-	 52: fs4 (fs4), float 64 bits
+-	 53: fs5 (fs5), float 64 bits
+-	 54: fs6 (fs6), float 64 bits
+-	 55: fs7 (fs7), float 64 bits
+-	 56: fs8 (fs8), float 64 bits
+-	 57: fs9 (fs9), float 64 bits
+-	 58: fs10 (fs10), float 64 bits
+-	 59: fs11 (fs11), float 64 bits
+-	 60: ft8 (ft8), float 64 bits
+-	 61: ft9 (ft9), float 64 bits
+-	 62: ft10 (ft10), float 64 bits
+-	 63: ft11 (ft11), float 64 bits
+-EOF
+ exit 0
+diff --git a/tests/run-arextract.sh b/tests/run-arextract.sh
+index 44f4a525..05329527 100755
+--- a/tests/run-arextract.sh
++++ b/tests/run-arextract.sh
+@@ -26,7 +26,7 @@ if test -f $archive; then
+     echo -n "Extracting symbols... $ac_c"
+ 
+     # The files we are looking at.
+-    for f in ${abs_top_builddir}/libelf/*.o; do
++    for f in ${abs_top_builddir}/libelf/libelf_a-*.o; do
+ 	testrun ${abs_builddir}/arextract $archive `basename $f` arextract.test || exit 1
+ 	cmp $f arextract.test || {
+ 	    echo "Extraction of $1 failed"
+diff --git a/tests/run-dwarfcfi.sh b/tests/run-dwarfcfi.sh
+index 98fa171d..87691ae5 100755
+--- a/tests/run-dwarfcfi.sh
++++ b/tests/run-dwarfcfi.sh
+@@ -98,23 +98,6 @@ testrun_compare ${abs_builddir}/dwarfcfi testfileppc64-debugframe 0x000000001000
+ 	reg9: undefined
+ EOF
+ 
+-testfiles testfilearm-debugframe
+-testrun_compare ${abs_builddir}/dwarfcfi testfilearm-debugframe 0x00008510 <<\EOF
+-0x8510 => [0x8510, 0x8524):
+-	return address in reg14
+-	CFA location expression: bregx(13)
+-	reg0: undefined
+-	reg1: undefined
+-	reg2: undefined
+-	reg3: undefined
+-	reg4: same_value
+-	reg5: same_value
+-	reg6: same_value
+-	reg7: same_value
+-	reg8: same_value
+-	reg9: undefined
+-EOF
+-
+ testfiles testfileaarch64-debugframe
+ testrun_compare ${abs_builddir}/dwarfcfi testfileaarch64-debugframe 0x400550 <<\EOF
+ 0x400550 => [0x400550, 0x400568):
+diff --git a/tests/run-elflint-test.sh b/tests/run-elflint-test.sh
+index caf172a6..bd886119 100755
+--- a/tests/run-elflint-test.sh
++++ b/tests/run-elflint-test.sh
+@@ -31,12 +31,14 @@ testfiles testfile33
+ testrun ${abs_top_builddir}/src/elflint -q testfile33
+ 
+ testfiles testfile42
+-testrun ${abs_top_builddir}/src/elflint -q --gnu-ld testfile42
++# sparc unsupported
++#testrun ${abs_top_builddir}/src/elflint -q --gnu-ld testfile42
+ 
+ # Contains debuginfo, compress it, recheck
+ tempfiles testfile42z
+ testrun ${abs_top_builddir}/src/elfcompress -f -q -o testfile42z testfile42
+-testrun ${abs_top_builddir}/src/elflint -q --gnu-ld testfile42z
++# sparc unsupported
++#testrun ${abs_top_builddir}/src/elflint -q --gnu-ld testfile42z
+ 
+ testfiles testfile46
+ testrun ${abs_top_builddir}/src/elflint -q testfile46
+diff --git a/tests/run-readelf-A.sh b/tests/run-readelf-A.sh
+index b7432bec..46e7a428 100755
+--- a/tests/run-readelf-A.sh
++++ b/tests/run-readelf-A.sh
+@@ -18,51 +18,19 @@
+ 
+ . $srcdir/test-subr.sh
+ 
+-# See run-addrcfi.sh for testfilearm.
+-
+ # = testfileppc32attrs.s =
+ # .gnu_attribute 8,1
+ # .gnu_attribute 12,1
+ #
+ # gcc -m32 -c testfileppc32attrs.s
+ 
+-# = testfilesparc64attrs.s =
+-# .gnu_attribute 4,0x0aaaaaaa
+-# .gnu_attribute 8,0x00000055
+-#
+-# gcc -c testfilesparc64attrs.s
+-
+ # = testfileppc64attrs.s =
+ # .gnu_attribute 4,3
+ #
+ # gcc -c testfileppc64attrs.s
+ 
+-testfiles testfilearm testfileppc32attrs.o testfilesparc64attrs.o testfileppc64attrs.o
+ 
+-testrun_compare ${abs_top_builddir}/src/readelf -A testfilearm <<\EOF
+-
+-Object attributes section [27] '.ARM.attributes' of 53 bytes at offset 0x718:
+-  Owner          Size
+-  aeabi            52
+-    File:          42
+-      CPU_name: 7-A
+-      CPU_arch: v7
+-      CPU_arch_profile: Application
+-      ARM_ISA_use: Yes
+-      THUMB_ISA_use: Thumb-2
+-      VFP_arch: VFPv3-D16
+-      ABI_PCS_wchar_t: 4
+-      ABI_FP_rounding: Needed
+-      ABI_FP_denormal: Needed
+-      ABI_FP_exceptions: Needed
+-      ABI_FP_number_model: IEEE 754
+-      ABI_align8_needed: Yes
+-      ABI_align8_preserved: Yes, except leaf SP
+-      ABI_enum_size: int
+-      ABI_HardFP_use: SP and DP
+-      ABI_VFP_args: VFP registers
+-      CPU_unaligned_access: v6
+-EOF
++testfiles testfileppc32attrs.o testfileppc64attrs.o
+ 
+ testrun_compare ${abs_top_builddir}/src/readelf -A testfileppc32attrs.o <<\EOF
+ 
+@@ -74,16 +42,6 @@ Object attributes section [ 4] '.gnu.attributes' of 18 bytes at offset 0x34:
+       GNU_Power_ABI_Struct_Return: r3/r4
+ EOF
+ 
+-testrun_compare ${abs_top_builddir}/src/readelf -A testfilesparc64attrs.o <<\EOF
+-
+-Object attributes section [ 4] '.gnu.attributes' of 21 bytes at offset 0x40:
+-  Owner          Size
+-  gnu              20
+-    File:          12
+-      GNU_Sparc_HWCAPS: div32,v8plus,vis,asi_blk_init,vis3,random,fjfmau,asi_cache_sparing,des,camellia,sha1,sha512,mont,cbcond
+-      GNU_Sparc_HWCAPS2: fjathplus,adp,mwait,xmont
+-EOF
+-
+ testrun_compare ${abs_top_builddir}/src/readelf -A testfileppc64attrs.o <<\EOF
+ 
+ Object attributes section [ 4] '.gnu.attributes' of 16 bytes at offset 0x40:
+diff --git a/tests/run-readelf-mixed-corenote.sh b/tests/run-readelf-mixed-corenote.sh
+index c960f1d6..382ea143 100755
+--- a/tests/run-readelf-mixed-corenote.sh
++++ b/tests/run-readelf-mixed-corenote.sh
+@@ -18,73 +18,6 @@
+ 
+ . $srcdir/test-subr.sh
+ 
+-testfiles testfile63
+-
+-testrun_compare ${abs_top_builddir}/src/readelf -n testfile63 <<\EOF
+-
+-Note segment of 892 bytes at offset 0x274:
+-  Owner          Data size  Type
+-  CORE                 148  PRSTATUS
+-    info.si_signo: 11, info.si_code: 0, info.si_errno: 0, cursig: 11
+-    sigpend: <>
+-    sighold: <>
+-    pid: 11087, ppid: 11063, pgrp: 11087, sid: 11063
+-    utime: 0.000000, stime: 0.010000, cutime: 0.000000, cstime: 0.000000
+-    orig_r0: -1, fpvalid: 1
+-    r0:             1  r1:   -1091672508  r2:   -1091672500
+-    r3:             0  r4:             0  r5:             0
+-    r6:         33728  r7:             0  r8:             0
+-    r9:             0  r10:  -1225703496  r11:  -1091672844
+-    r12:            0  sp:    0xbeee64f4  lr:    0xb6dc3f48
+-    pc:    0x00008500  spsr:  0x60000010
+-  CORE                 124  PRPSINFO
+-    state: 0, sname: R, zomb: 0, nice: 0, flag: 0x00400500
+-    uid: 0, gid: 0, pid: 11087, ppid: 11063, pgrp: 11087, sid: 11063
+-    fname: a.out, psargs: ./a.out 
+-  CORE                 144  AUXV
+-    HWCAP: 0xe8d7  <swp half thumb fast-mult vfp edsp>
+-    PAGESZ: 4096
+-    CLKTCK: 100
+-    PHDR: 0x8034
+-    PHENT: 32
+-    PHNUM: 8
+-    BASE: 0xb6eee000
+-    FLAGS: 0
+-    ENTRY: 0x83c0
+-    UID: 0
+-    EUID: 0
+-    GID: 0
+-    EGID: 0
+-    SECURE: 0
+-    RANDOM: 0xbeee674e
+-    EXECFN: 0xbeee6ff4
+-    PLATFORM: 0xbeee675e
+-    NULL
+-  CORE                 116  FPREGSET
+-    f0: 0x000000000000000000000000  f1: 0x000000000000000000000000
+-    f2: 0x000000000000000000000000  f3: 0x000000000000000000000000
+-    f4: 0x000000000000000000000000  f5: 0x000000000000000000000000
+-    f6: 0x000000000000000000000000  f7: 0x000000000000000000000000
+-  LINUX                260  ARM_VFP
+-    fpscr: 0x00000000
+-    d0:  0x0000000000000000  d1:  0x0000000000000000
+-    d2:  0x0000000000000000  d3:  0x0000000000000000
+-    d4:  0x0000000000000000  d5:  0x0000000000000000
+-    d6:  0x0000000000000000  d7:  0x0000000000000000
+-    d8:  0x0000000000000000  d9:  0x0000000000000000
+-    d10: 0x0000000000000000  d11: 0x0000000000000000
+-    d12: 0x0000000000000000  d13: 0x0000000000000000
+-    d14: 0x0000000000000000  d15: 0x0000000000000000
+-    d16: 0x0000000000000000  d17: 0x0000000000000000
+-    d18: 0x0000000000000000  d19: 0x0000000000000000
+-    d20: 0x0000000000000000  d21: 0x0000000000000000
+-    d22: 0x0000000000000000  d23: 0x0000000000000000
+-    d24: 0x0000000000000000  d25: 0x0000000000000000
+-    d26: 0x0000000000000000  d27: 0x0000000000000000
+-    d28: 0x0000000000000000  d29: 0x0000000000000000
+-    d30: 0x0000000000000000  d31: 0x0000000000000000
+-EOF
+-
+ testfiles testfile67
+ testrun_compare ${abs_top_builddir}/src/readelf -n testfile67 <<\EOF
+ 
+@@ -582,138 +515,4 @@ Note segment of 2548 bytes at offset 0x234:
+   LINUX                832  X86_XSTATE
+ EOF
+ 
+-# To reproduce this core dump, do this on an m68k machine:
+-# $ gcc -x c <(echo 'int main () { return *(int *)0x12345678; }')
+-# $ ./a.out
+-testfiles testfile-m68k-core
+-testrun_compare ${abs_top_builddir}/src/readelf -n testfile-m68k-core <<\EOF
+-
+-Note segment of 1056 bytes at offset 0x1f4:
+-  Owner          Data size  Type
+-  CORE                 154  PRSTATUS
+-    info.si_signo: 11, info.si_code: 0, info.si_errno: 0, cursig: 11
+-    sigpend: <>
+-    sighold: <>
+-    pid: 1963, ppid: 1084, pgrp: 1963, sid: 1084
+-    utime: 0.000000, stime: 0.010000, cutime: 0.000000, cstime: 0.000000
+-    fpvalid: 1
+-    d1:           1  d2:           0  d3: -2146476616  d4: -2146476616
+-    d5:           0  d6: -2147393212  d7: -2144827216  a0:  0x12345678
+-    a1:  0xefe71460  a2:  0x00000000  a3:  0x80288df8  a4:  0x80000340
+-    a5:  0xc017a000  a6:  0xefe71434  d0: -1073595312  a7:  0xefe71434
+-    pc:  0x800003fe
+-  CORE                 124  PRPSINFO
+-    state: 0, sname: R, zomb: 0, nice: 0, flag: 0x00400600
+-    uid: 1000, gid: 501, pid: 1963, ppid: 1084, pgrp: 1963, sid: 1084
+-    fname: a.out, psargs: ./a.out 
+-  CORE                 128  SIGINFO
+-    si_signo: 11, si_errno: 0, si_code: 1
+-    fault address: 0x12345678
+-  CORE                 136  AUXV
+-    HWCAP: 0
+-    PAGESZ: 4096
+-    CLKTCK: 100
+-    PHDR: 0x80000034
+-    PHENT: 32
+-    PHNUM: 9
+-    BASE: 0xc0000000
+-    FLAGS: 0
+-    ENTRY: 0x80000340
+-    UID: 1000
+-    EUID: 1000
+-    GID: 501
+-    EGID: 501
+-    SECURE: 0
+-    RANDOM: 0xefe716d9
+-    EXECFN: 0xefe71ff4
+-    NULL
+-  CORE                 281  FILE
+-    10 files:
+-      80000000-80001000 00000000 4096                /tmp/a.out
+-      80003000-80004000 00001000 4096                /tmp/a.out
+-      80004000-80005000 00002000 4096                /tmp/a.out
+-      c0000000-c001c000 00000000 114688              /lib/ld-2.23.so
+-      c001f000-c0020000 0001d000 4096                /lib/ld-2.23.so
+-      c0020000-c0021000 0001e000 4096                /lib/ld-2.23.so
+-      c0032000-c0177000 00000000 1331200             /lib/libc-2.23.so
+-      c0177000-c0178000 00145000 4096                /lib/libc-2.23.so
+-      c0178000-c017a000 00144000 8192                /lib/libc-2.23.so
+-      c017a000-c017e000 00146000 16384               /lib/libc-2.23.so
+-  CORE                 108  FPREGSET
+-    fp0: 0x7fff0000ffffffffffffffff  fp1: 0x7fff0000ffffffffffffffff
+-    fp2: 0x7fff0000ffffffffffffffff  fp3: 0x7fff0000ffffffffffffffff
+-    fp4: 0x7fff0000ffffffffffffffff  fp5: 0x7fff0000ffffffffffffffff
+-    fp6: 0x7fff0000ffffffffffffffff  fp7: 0x7fff0000ffffffffffffffff
+-EOF
+-
+-# To reproduce this core dump, do this on a riscv64 machine:
+-# $ gcc -x c <(echo 'int main () { return *(int *)0x12345678; }')
+-# $ ./a.out
+-testfiles testfile-riscv64-core
+-testrun_compare ${abs_top_builddir}/src/readelf -n testfile-riscv64-core <<\EOF
+-
+-Note segment of 1408 bytes at offset 0x388:
+-  Owner          Data size  Type
+-  CORE                 376  PRSTATUS
+-    info.si_signo: 11, info.si_code: 0, info.si_errno: 0, cursig: 11
+-    sigpend: <>
+-    sighold: <>
+-    pid: 6801, ppid: 1155, pgrp: 6801, sid: 1155
+-    utime: 0.000000, stime: 0.110000, cutime: 0.000000, cstime: 0.000000
+-    pc: 0x000000000001049a, fpvalid: 0
+-    ra:    0x0000002000051c9a  sp:    0x0000003fff981240
+-    gp:    0x0000000000012828  tp:    0x00000020000311d0
+-    t0:          137439068496  t1:          137439288314
+-    t2:                 74672  s0:          274871095888
+-    s1:                 66724  a0:                     1
+-    a1:          274871096232  a2:          274871096248
+-    a3:                     0  a4:          274871095928
+-    a5:             305419896  a6:          137440357656
+-    a7:                     0  s2:          183254994416
+-    s3:          137439062288  s4:                     0
+-    s5:          183257703888  s6:          183256061824
+-    s7:                     0  s8:          183252656348
+-    s9:          183257666368  s10:         183257700608
+-    s11:                    0  t3:                130042
+-    t4:                     2  t5:                     3
+-    t6:                 15632
+-  CORE                 136  PRPSINFO
+-    state: 0, sname: R, zomb: 0, nice: 0, flag: 0x0000000000400600
+-    uid: 0, gid: 0, pid: 6801, ppid: 1155, pgrp: 6801, sid: 1155
+-    fname: a.out, psargs: /tmp/a.out 
+-  CORE                 128  SIGINFO
+-    si_signo: 11, si_errno: 0, si_code: 1
+-    fault address: 0x12345678
+-  CORE                 288  AUXV
+-    SYSINFO_EHDR: 0x200001d000
+-    HWCAP: 0x1105
+-    PAGESZ: 4096
+-    CLKTCK: 100
+-    PHDR: 0x10040
+-    PHENT: 56
+-    PHNUM: 9
+-    BASE: 0x2000000000
+-    FLAGS: 0
+-    ENTRY: 0x103e0
+-    UID: 0
+-    EUID: 0
+-    GID: 0
+-    EGID: 0
+-    SECURE: 0
+-    RANDOM: 0x3fff9816d6
+-    EXECFN: 0x3fff981fed
+-    NULL
+-  CORE                 379  FILE
+-    9 files:
+-      00010000-00011000 00000000 4096                /tmp/a.out
+-      00011000-00012000 00000000 4096                /tmp/a.out
+-      00012000-00013000 00001000 4096                /tmp/a.out
+-      2000000000-200001a000 00000000 106496          /lib64/ld-2.27.so
+-      200001a000-200001b000 00019000 4096            /lib64/ld-2.27.so
+-      200001b000-200001c000 0001a000 4096            /lib64/ld-2.27.so
+-      2000032000-2000151000 00000000 1175552         /lib64/libc-2.27.so
+-      2000151000-2000155000 0011e000 16384           /lib64/libc-2.27.so
+-      2000155000-2000157000 00122000 8192            /lib64/libc-2.27.so
+-EOF
+-
+ exit 0
+diff --git a/tests/run-strip-g.sh b/tests/run-strip-g.sh
+index 15921215..5083fa0e 100755
+--- a/tests/run-strip-g.sh
++++ b/tests/run-strip-g.sh
+@@ -49,31 +49,6 @@ if test $status -ne 1; then
+   exit 1
+ fi
+ 
+-# arm (with data marker in .debug_frame). See tests/run-addrcfi.sh
+-testfiles testfilearm
+-
+-echo arm strip -g to file with debug file
+-testrun ${abs_top_builddir}/src/strip -g -o strip.out -f debug.out testfilearm ||
+-  { echo "*** failed to strip -g -o strip.out -f debug.out a.out"; exit -1; }
+-
+-status=0
+-testrun ${abs_top_builddir}/src/readelf -S strip.out > readelf.out
+-grep SYMTAB readelf.out || status=$?
+-echo $status
+-if test $status -ne 0; then
+-  echo no symtab found in strip.out
+-  exit 1
+-fi
+-
+-status=0
+-testrun ${abs_top_builddir}/src/readelf -S debug.out > readelf.out
+-grep SYMTAB readelf.out || status=$?
+-echo $status
+-if test $status -ne 1; then
+-  echo symtab found in debug.out
+-  exit 1
+-fi
+-
+ # aarch64 (with data marker in .debug_frame). See tests/run-addrcfi.sh
+ testfiles testfileaarch64
+ 
+diff --git a/tests/run-strip-reloc.sh b/tests/run-strip-reloc.sh
+index b7ec1420..3523f075 100755
+--- a/tests/run-strip-reloc.sh
++++ b/tests/run-strip-reloc.sh
+@@ -18,7 +18,7 @@
+ . $srcdir/test-subr.sh
+ 
+ testfiles hello_i386.ko hello_x86_64.ko hello_ppc64.ko hello_s390.ko \
+-	hello_aarch64.ko hello_m68k.ko hello_riscv64.ko hello_csky.ko
++	hello_aarch64.ko
+ 
+ tempfiles readelf.out readelf.out1 readelf.out2
+ tempfiles out.stripped1 out.debug1 out.stripped2 out.debug2
+@@ -117,9 +117,6 @@ runtest hello_x86_64.ko 1
+ runtest hello_ppc64.ko 1
+ runtest hello_s390.ko 1
+ runtest hello_aarch64.ko 1
+-runtest hello_m68k.ko 1
+-runtest hello_riscv64.ko 1
+-runtest hello_csky.ko 1
+ 
+ # self test, shouldn't impact non-ET_REL files at all.
+ runtest ${abs_top_builddir}/src/strip 0
